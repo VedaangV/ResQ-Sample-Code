@@ -1,5 +1,7 @@
 /*
 
+From Adafruit Examples
+
 This example code is used to get r, g, b, and c values from the APDS9960 color sensor.
 r, g, b - red/green/blue light intesnity
 c - clear channel, overall light intensity
