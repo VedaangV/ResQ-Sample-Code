@@ -2,6 +2,8 @@
 This example code is for the HC-SR04 ping (distance) sensor. 
 The sensor works by sending out a wave through the transmitter, and receiving its echo with the receiver after it bounces off an object.
 The time of the wave's travel is recorded and converted from microseconds to centimeters.
+
+Teams typically use this sensor to detect obstacles.
 */
 
 
