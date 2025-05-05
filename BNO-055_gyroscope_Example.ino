@@ -8,7 +8,7 @@
 Source: Adafruit Examples
 
 This example code is used to get data from the BNO-055. While the sensor has various applications, this example shows getting rotation in the x, y, and z dimensions.
-
+Typically, teams use this sensor to achieve accurate turns using the BNO x rotation.
 For more information or examples, visit the Adafruit website.
 
 */
