@@ -8,6 +8,8 @@ Power (Red) - connects to 5V on the board
 Ground (Black) - connects to GND on the board
 Signal (White or Yellow) - connects to a digital pin on the board
 
+Teams typically use servo motors to power their attachments, like a rescue mechanism for the evacuation zone.
+
 */
 
 Servo myservo;  // create servo object to control a servo
