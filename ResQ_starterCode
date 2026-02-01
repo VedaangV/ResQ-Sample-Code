@@ -1,0 +1,224 @@
+#include <Wire.h>
+#include <Adafruit_APDS9960.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
+#include <Adafruit_VL53L0X.h>
+#include <Servo.h>
+
+//////////////////// OBJECTS ////////////////////
+Adafruit_APDS9960 apds;
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+Servo myServo;
+
+//////////////////// PINS ////////////////////
+// Ultrasonic
+const int trigPin = 9;
+const int echoPin = 10;
+
+// Servo
+const int servoPin = 11;
+
+// Motors (change if needed)
+const int L_IN1 = 4;
+const int L_IN2 = 5;
+const int L_PWM = 3;
+
+const int R_IN1 = 7;
+const int R_IN2 = 8;
+const int R_PWM = 6;
+
+//////////////////// SETUP FUNCTIONS ////////////////////
+
+void setupColorSensor() {
+  if (!apds.begin()) {
+    Serial.println("APDS-9960 not found!");
+    while (1);
+  }
+  apds.enableColor(true);
+}
+
+void setupIMU() {
+  if (!bno.begin()) {
+    Serial.println("BNO055 not detected!");
+    while (1);
+  }
+  delay(1000);
+  bno.setExtCrystalUse(true);
+}
+
+void setupUltrasonic() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void setupTOF() {
+  if (!lox.begin()) {
+    Serial.println("VL53L0X not found!");
+    while (1);
+  }
+}
+
+void setupServoMotor() {
+  myServo.attach(servoPin);
+}
+
+void setupMotors() {
+  pinMode(L_IN1, OUTPUT);
+  pinMode(L_IN2, OUTPUT);
+  pinMode(L_PWM, OUTPUT);
+  pinMode(R_IN1, OUTPUT);
+  pinMode(R_IN2, OUTPUT);
+  pinMode(R_PWM, OUTPUT);
+}
+
+//////////////////// SENSOR READ FUNCTIONS ////////////////////
+
+void readColor(int &r, int &g, int &b, int &c) {
+  if (apds.colorDataReady()) {
+    apds.getColorData(&r, &g, &b, &c);
+  }
+}
+
+void getOrientation(float &x, float &y, float &z) {
+  sensors_event_t event;
+  bno.getEvent(&event);
+  x = event.orientation.x;
+  y = event.orientation.y;
+  z = event.orientation.z;
+}
+
+int getUltrasonicDistance() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH, 30000); // timeout 30ms
+  if (duration == 0) return -1;
+  return duration * 0.034 / 2;
+}
+
+int getTOFDistance() {
+  VL53L0X_RangingMeasurementData_t measure;
+  lox.rangingTest(&measure, false);
+
+  if (measure.RangeStatus != 4) {
+    return measure.RangeMilliMeter;
+  } else {
+    return -1;
+  }
+}
+
+//////////////////// SERVO FUNCTION ////////////////////
+
+void setServoAngle(int angle) {
+  angle = constrain(angle, 0, 180);
+  myServo.write(angle);
+}
+
+//////////////////// MOTOR CONTROL ////////////////////
+
+void setMotorSpeeds(int leftSpeed, int rightSpeed) {
+  leftSpeed = constrain(leftSpeed, -255, 255);
+  rightSpeed = constrain(rightSpeed, -255, 255);
+
+  // LEFT MOTOR
+  if (leftSpeed > 0) {
+    digitalWrite(L_IN1, HIGH);
+    digitalWrite(L_IN2, LOW);
+  } else if (leftSpeed < 0) {
+    digitalWrite(L_IN1, LOW);
+    digitalWrite(L_IN2, HIGH);
+  } else {
+    digitalWrite(L_IN1, LOW);
+    digitalWrite(L_IN2, LOW);
+  }
+
+  // RIGHT MOTOR
+  if (rightSpeed > 0) {
+    digitalWrite(R_IN1, HIGH);
+    digitalWrite(R_IN2, LOW);
+  } else if (rightSpeed < 0) {
+    digitalWrite(R_IN1, LOW);
+    digitalWrite(R_IN2, HIGH);
+  } else {
+    digitalWrite(R_IN1, LOW);
+    digitalWrite(R_IN2, LOW);
+  }
+
+  analogWrite(L_PWM, abs(leftSpeed));
+  analogWrite(R_PWM, abs(rightSpeed));
+}
+
+void stopMotors() {
+  setMotorSpeeds(0, 0);
+}
+
+void driveForward(int speed) {
+  setMotorSpeeds(speed, speed);
+}
+
+void driveBackward(int speed) {
+  setMotorSpeeds(-speed, -speed);
+}
+
+void turnLeft(int speed) {
+  setMotorSpeeds(-speed, speed);
+}
+
+void turnRight(int speed) {
+  setMotorSpeeds(speed, -speed);
+}
+
+//////////////////// MAIN SETUP ////////////////////
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+
+  setupColorSensor();
+  setupIMU();
+  setupUltrasonic();
+  setupTOF();
+  setupServoMotor();
+  setupMotors();
+
+  Serial.println("Robot system ready!");
+}
+
+//////////////////// MAIN LOOP ////////////////////
+
+void loop() {
+  int r, g, b, c;
+  float x, y, z;
+
+  readColor(r, g, b, c);
+  getOrientation(x, y, z);
+  int ultrasonicDist = getUltrasonicDistance();
+  int tofDist = getTOFDistance();
+
+  Serial.println("---- SENSOR READINGS ----");
+
+  Serial.print("Color R: "); Serial.print(r);
+  Serial.print(" G: "); Serial.print(g);
+  Serial.print(" B: "); Serial.print(b);
+  Serial.print(" C: "); Serial.println(c);
+
+  Serial.print("Orientation X: "); Serial.print(x);
+  Serial.print(" Y: "); Serial.print(y);
+  Serial.print(" Z: "); Serial.println(z);
+
+  Serial.print("Ultrasonic (cm): ");
+  Serial.println(ultrasonicDist);
+
+  Serial.print("TOF (mm): ");
+  Serial.println(tofDist);
+
+
+  setServoAngle(90); // keep servo centered
+
+  delay(200);
+}
