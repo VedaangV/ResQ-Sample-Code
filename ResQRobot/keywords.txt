@@ -1,0 +1,50 @@
+#######################################
+# Syntax Coloring Map For ResQRobot
+#######################################
+
+# Classes (KEYWORD1)
+#######################################
+
+ResQRobot	KEYWORD1
+ResQMotors	KEYWORD1
+ResQColorSensor	KEYWORD1
+ResQImu	KEYWORD1
+ResQUltrasonic	KEYWORD1
+ResQTofSensor	KEYWORD1
+ResQServo	KEYWORD1
+
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setSpeeds	KEYWORD2
+forward	KEYWORD2
+backward	KEYWORD2
+turnLeft	KEYWORD2
+turnRight	KEYWORD2
+pivotLeft	KEYWORD2
+pivotRight	KEYWORD2
+stop	KEYWORD2
+colorReady	KEYWORD2
+readColor	KEYWORD2
+getOrientation	KEYWORD2
+getHeading	KEYWORD2
+getCalibration	KEYWORD2
+isFullyCalibrated	KEYWORD2
+readDistanceCM	KEYWORD2
+readDistanceMM	KEYWORD2
+setAngle	KEYWORD2
+getAngle	KEYWORD2
+
+# Constants (LITERAL1)
+#######################################
+
+RESQ_DEFAULT_TRIG_PIN	LITERAL1
+RESQ_DEFAULT_ECHO_PIN	LITERAL1
+RESQ_DEFAULT_SERVO_PIN	LITERAL1
+RESQ_DEFAULT_L_IN1	LITERAL1
+RESQ_DEFAULT_L_IN2	LITERAL1
+RESQ_DEFAULT_L_PWM	LITERAL1
+RESQ_DEFAULT_R_IN1	LITERAL1
+RESQ_DEFAULT_R_IN2	LITERAL1
+RESQ_DEFAULT_R_PWM	LITERAL1
