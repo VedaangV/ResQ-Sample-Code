@@ -1,8 +1,8 @@
 # ResQRobot
 
 An Arduino library for the ResQ Rescue Line robot kit. It wraps the kit's
-sensors and actuators - APDS9960 color sensor, BNO055 IMU, VL53L0X
-time-of-flight sensor, HC-SR04 ultrasonic sensor, a servo, and the two TT
+sensors and actuators - APDS9960 color sensor, BNO-055 IMU, VL53L0X
+time-of-flight sensor, HC-SR04 ultrasonic sensor, a Towerpro MG90D servo, and the two TT
 tread-drive motors - into small, well-documented classes so you can write
 robot code without re-deriving register-level sensor logic every time.
 
